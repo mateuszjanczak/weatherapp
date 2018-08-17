@@ -1,0 +1,71 @@
+html { 
+    color: white;
+    font-family: 'Open Sans', sans-serif;
+    background: url('https://picsum.photos/1920/1080/?random&balur=false') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+body, html {
+    height: 100%;
+    display: grid;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin: auto;
+}
+
+.hide {
+    display: none;
+}
+
+.hook {
+    margin-bottom: 5px;
+    padding: 25px;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 5px;
+    text-transform: uppercase;
+    text-align: center;
+    text-shadow: 0px 0px 5px black;
+}
+
+.row::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+#temperature {
+    color: lightsteelblue;
+    font-size: 72px;
+}
+
+#location {
+    color: lightcoral;
+}
+
+#location:hover {
+    cursor: pointer;
+}
+
+#coordinates {
+    color: lightgray;
+    font-size: 14px;
+}
+
+#update {
+    font-size: 8px;
+}
+
+#forecast div:first-child {
+    margin-left: 0;
+}
+
+#forecast div {
+    float: left;
+    margin-left: 25px;
+}

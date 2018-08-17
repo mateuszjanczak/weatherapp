@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="author" content="Mateusz Janczak - github.com/mateuszjanczak">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    <link rel="stylesheet" href="css/weather-icons.min.css">
+</head>
+<body>
+    <div class="container">
+        <div id="weather" class="hook">
+            <div id="loading">
+                <img src="loading.svg"/>
+                <p id="status"></p>
+            </div>
+            <div id="temperature">
+                <i id="icon"></i>
+                <span id="now"></span>
+            </div>
+            <div id="coordinates">
+                <span id="lat"></span>
+                <span id="long"></span>
+            </div>
+            <div id="location">
+                <span id="city"></span>
+                <span id="region"></span>
+                <span id="country"></span>
+            </div>
+            <div id="update">
+                <span id="lastcheck"></span>
+            </div>
+        </div>
+        <div id="forecast" class="hide hook row"></div>
+    </div>
+</body>
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    setTimeout(function weather(){
+        $.getJSON('https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22'+localStorage['location']+'%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys', function(data){
+            if(!data.query.count)
+            {
+                localStorage['location'] = 'Cracow';
+                weather();
+            }
+            else
+            {
+                $("#loading").remove();
+                $("#forecast").removeClass("hide");
+                data = data.query.results.channel;
+                code = "wi wi-yahoo-" + data.item.condition.code;
+                $("#icon").addClass(code);
+                temp = ((parseInt(data.item.condition.temp)-32)*5)/9;
+                $("#now").html(parseInt(temp) + "°C");
+                $("#city").html(data.location.city + ",");
+                $("#region").html(data.location.region + ",");
+                $("#country").html(data.location.country);
+                $("#location").off("click").click(function(){
+                    cache = localStorage['location'];
+                    if(localStorage['location'] = prompt("enter address!"))
+                    {
+                        $("#forecast").html("");
+                        weather();
+                    }
+                    else
+                    {
+                        localStorage['location'] = cache;
+                    }
+                });
+                $("#lat").html(data.item.lat + ",");
+                $("#long").html(data.item.long);
+                //$("#lastcheck").html(data.item.condition.date);
+                counter = 0;
+                limit = 7;
+                data.item.forecast.forEach(function(item, index){
+                    if(counter < limit)
+                    {
+                        div = $("<div></div>");
+                        date = new Date(item.date);
+                        div.append("<span></span>").find("span:first").text(item.day + " " + parseInt(date.getMonth()+1) + "/" + date.getDate());
+                        div.append("<p><i></i></p>").find("i").addClass("wi wi-yahoo-"+item.code);
+                        div.append("<span></span>").find("span:last").text(parseInt(((parseInt(item.high)-32)*5)/9) + "°C");
+                        $("#forecast").append(div);
+                    }
+                    counter++
+                });
+            }
+        }).fail(function(){
+            $("#status").html('connection timed out');
+        });
+    }, 2000);
+</script>
